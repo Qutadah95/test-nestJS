@@ -1,16 +1,16 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { pet } from "./pet.model";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { pet } from './pet.model';
 
 @Injectable()
 export class PetsService {
   private Pets: pet[] = [];
 
-  insertpet(title: string, desc: string, price: number) {
+  insertpet(title: string, image: string, desc: string, price: number) {
     const petId = Math.random().toString();
-    const newpet = new pet(petId, title, desc, price);
+    const newpet = new pet(petId, title, image, desc, price);
     this.Pets.push(newpet);
-    return petId;
+    return { petId, title, image, desc, price };
   }
 
   getPets() {
@@ -22,11 +22,20 @@ export class PetsService {
     return { ...pet };
   }
 
-  updatepet(pet_Id: string, title: string, desc: string, price: number) {
+  updatepet(
+    pet_Id: string,
+    title: string,
+    image: string,
+    desc: string,
+    price: number,
+  ) {
     const [pet, index] = this.findpet(pet_Id);
     const updatedPet = { ...pet };
     if (title) {
       updatedPet.title = title;
+    }
+    if (image) {
+      updatedPet.image = image;
     }
     if (desc) {
       updatedPet.description = desc;
@@ -46,7 +55,7 @@ export class PetsService {
     const petIndex = this.Pets.findIndex((pet) => pet.id === id);
     const pet = this.Pets[petIndex];
     if (!pet) {
-      throw new NotFoundException("Could not find pet.");
+      throw new NotFoundException('Could not find pet.');
     }
     return [pet, petIndex];
   }

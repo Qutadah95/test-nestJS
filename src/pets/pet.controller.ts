@@ -8,6 +8,7 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
+import { title } from 'process';
 import { PetsService } from './pet.service';
 
 @Controller('pets')
@@ -17,10 +18,21 @@ export class PetsController {
   @Post()
   addpet(
     @Body('title') petTitle: string,
+    @Body('image') petImage: string,
     @Body('description') petDesc: string,
     @Body('price') petPrice: number,
   ) {
-    const generatedId = this.petsService.insertpet(petTitle, petDesc, petPrice);
+    const generatedId = this.petsService.insertpet(
+      petTitle,
+      petImage,
+      petDesc,
+      petPrice,
+    );
+    console.log(
+      '===============================================>',
+      generatedId,
+    );
+
     return { id: generatedId };
   }
 
@@ -38,10 +50,11 @@ export class PetsController {
   updatepet(
     @Param('id') petId: string,
     @Body('title') petTitle: string,
+    @Body('image') petImage: string,
     @Body('description') petDesc: string,
     @Body('price') petPrice: number,
   ) {
-    this.petsService.updatepet(petId, petTitle, petDesc, petPrice);
+    this.petsService.updatepet(petId, petTitle, petImage, petDesc, petPrice);
     return null;
   }
 
