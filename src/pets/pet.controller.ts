@@ -8,7 +8,6 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
-import { title } from 'process';
 import { PetsService } from './pet.service';
 
 @Controller('pets')
@@ -16,29 +15,26 @@ export class PetsController {
   constructor(private readonly petsService: PetsService) {}
 
   @Post()
-  addpet(
+  async addpet(
     @Body('title') petTitle: string,
     @Body('image') petImage: string,
     @Body('description') petDesc: string,
     @Body('price') petPrice: number,
   ) {
-    const generatedId = this.petsService.insertpet(
+    const generatedId = await this.petsService.insertpet(
       petTitle,
       petImage,
       petDesc,
       petPrice,
-    );
-    console.log(
-      '===============================================>',
-      generatedId,
     );
 
     return { id: generatedId };
   }
 
   @Get()
-  getAllpets() {
-    return this.petsService.getPets();
+  async getAllpets() {
+    const pets = await this.petsService.getPets();
+    return pets;
   }
 
   @Get(':id')
@@ -47,20 +43,26 @@ export class PetsController {
   }
 
   @Patch(':id')
-  updatepet(
+  async updatepet(
     @Param('id') petId: string,
     @Body('title') petTitle: string,
     @Body('image') petImage: string,
     @Body('description') petDesc: string,
     @Body('price') petPrice: number,
   ) {
-    this.petsService.updatepet(petId, petTitle, petImage, petDesc, petPrice);
+    await this.petsService.updatepet(
+      petId,
+      petTitle,
+      petImage,
+      petDesc,
+      petPrice,
+    );
     return null;
   }
 
   @Delete(':id')
-  removepet(@Param('id') petId: string) {
-    this.petsService.deletepet(petId);
+  async removepet(@Param('id') petId: string) {
+    await this.petsService.deletepet(petId);
     return null;
   }
 }

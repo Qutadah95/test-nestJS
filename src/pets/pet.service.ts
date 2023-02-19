@@ -1,36 +1,59 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { pet } from './pet.model';
-
+import { InjectModel } from '@nestjs/mongoose';
+import { PetsModule } from './pet.module';
+import { Model } from 'mongoose';
 @Injectable()
 export class PetsService {
   private Pets: pet[] = [];
-
-  insertpet(title: string, image: string, desc: string, price: number) {
+  constructor(@InjectModel('Pet') private readonly PetsModule: Model<pet>) {}
+  async insertpet(title: string, image: string, desc: string, price: number) {
     const petId = Math.random().toString();
-    const newpet = new pet(petId, title, image, desc, price);
-    this.Pets.push(newpet);
-    return { petId, title, image, desc, price };
+    const newpet = new this.PetsModule({
+      title: title,
+      image: image,
+      description: desc,
+      price: price,
+    });
+    const result = await newpet.save();
+    console.log(result);
+    return result.id as string;
+    // return { petId, title, image, desc, price };
   }
 
-  getPets() {
-    return [...this.Pets];
+  async getPets() {
+    const pets = await this.PetsModule.find().exec();
+    console.log(pets);
+
+    return pets.map((pet) => ({
+      id: pet.id,
+      title: pet.title,
+      image: pet.image,
+      description: pet.description,
+      price: pet.price,
+    }));
   }
 
-  getSinglePet(pet_Id: string) {
-    const pet = this.findpet(pet_Id)[0];
-    return { ...pet };
+  async getSinglePet(pet_Id: string) {
+    const pet = await this.findpet(pet_Id);
+    return {
+      id: pet.id,
+      title: pet.title,
+      image: pet.image,
+      description: pet.description,
+      price: pet.price,
+    };
   }
 
-  updatepet(
+  async updatepet(
     pet_Id: string,
     title: string,
     image: string,
     desc: string,
     price: number,
   ) {
-    const [pet, index] = this.findpet(pet_Id);
-    const updatedPet = { ...pet };
+    const updatedPet = await this.findpet(pet_Id);
     if (title) {
       updatedPet.title = title;
     }
@@ -43,20 +66,18 @@ export class PetsService {
     if (price) {
       updatedPet.price = price;
     }
-    this.Pets[index] = updatedPet;
+    updatedPet.save();
   }
 
-  deletepet(petId: string) {
-    const index = this.findpet(petId)[1];
-    this.Pets.splice(index, 1);
+  async deletepet(petId: string) {
+    await this.PetsModule.deleteOne({ _id: petId }).exec();
   }
 
-  private findpet(id: string): [pet, number] {
-    const petIndex = this.Pets.findIndex((pet) => pet.id === id);
-    const pet = this.Pets[petIndex];
+  private async findpet(id: string): Promise<pet> {
+    const pet = await this.PetsModule.findById(id);
     if (!pet) {
       throw new NotFoundException('Could not find pet.');
     }
-    return [pet, petIndex];
+    return pet;
   }
 }
