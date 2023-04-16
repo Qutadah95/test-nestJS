@@ -20,12 +20,18 @@ export class PetsController {
     @Body('image') petImage: string,
     @Body('description') petDesc: string,
     @Body('price') petPrice: number,
+    @Body('gender') petGender: string,
+    @Body('name') petName: string,
+    @Body('age') petAge: number,
   ) {
     const generatedId = await this.petsService.insertpet(
       petTitle,
       petImage,
       petDesc,
       petPrice,
+      petGender,
+      petName,
+      petAge,
     );
 
     return { id: generatedId };
@@ -49,6 +55,9 @@ export class PetsController {
     @Body('image') petImage: string,
     @Body('description') petDesc: string,
     @Body('price') petPrice: number,
+    @Body('gender') petGender: string,
+    @Body('name') petName: string,
+    @Body('age') petAge: number,
   ) {
     await this.petsService.updatepet(
       petId,
@@ -56,6 +65,9 @@ export class PetsController {
       petImage,
       petDesc,
       petPrice,
+      petGender,
+      petName,
+      petAge,
     );
     return null;
   }

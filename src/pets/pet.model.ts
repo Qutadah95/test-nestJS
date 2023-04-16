@@ -10,7 +10,10 @@ export const PetSchema = new mongoose.Schema({
 export interface pet extends mongoose.Document {
   id: string;
   title: string;
+  gender: string;
+  name: string;
   image: string;
   description: string;
   price: number;
+  age: number;
 }

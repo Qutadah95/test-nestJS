@@ -8,13 +8,24 @@ import { Model } from 'mongoose';
 export class PetsService {
   private Pets: pet[] = [];
   constructor(@InjectModel('Pet') private readonly PetsModule: Model<pet>) {}
-  async insertpet(title: string, image: string, desc: string, price: number) {
+  async insertpet(
+    title: string,
+    image: string,
+    desc: string,
+    price: number,
+    gender: string,
+    name: string,
+    age: number,
+  ) {
     const petId = Math.random().toString();
     const newpet = new this.PetsModule({
       title: title,
       image: image,
       description: desc,
       price: price,
+      gender: gender,
+      name: name,
+      age: age,
     });
     const result = await newpet.save();
     console.log(result);
@@ -32,6 +43,9 @@ export class PetsService {
       image: pet.image,
       description: pet.description,
       price: pet.price,
+      gender: pet.gender,
+      name: pet.name,
+      age: pet.age,
     }));
   }
 
@@ -43,6 +57,9 @@ export class PetsService {
       image: pet.image,
       description: pet.description,
       price: pet.price,
+      gender: pet.gender,
+      name: pet.name,
+      age: pet.age,
     };
   }
 
@@ -52,6 +69,9 @@ export class PetsService {
     image: string,
     desc: string,
     price: number,
+    gender: string,
+    name: string,
+    age: number,
   ) {
     const updatedPet = await this.findpet(pet_Id);
     if (title) {
@@ -65,6 +85,15 @@ export class PetsService {
     }
     if (price) {
       updatedPet.price = price;
+    }
+    if (gender) {
+      updatedPet.gender = gender;
+    }
+    if (name) {
+      updatedPet.name = name;
+    }
+    if (age) {
+      updatedPet.age = age;
     }
     updatedPet.save();
   }
